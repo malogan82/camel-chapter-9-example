@@ -3,6 +3,7 @@
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="it.marco.camel.strategies.MyAggregationStrategy" id="myAggregationStrategy"/>
     <bean class="it.marco.camel.processors.MyProcessor" id="myProcessor"/>
     <bean class="it.marco.camel.beans.MyBean" id="myBean"/>
     <camelContext id="camelContext-6181de96-d9a3-4d14-817d-d295a4a6a151" xmlns="http://camel.apache.org/schema/spring">
@@ -23,9 +24,26 @@
             <bean id="_bean1" method="transform" ref="myBean"/>
             <to id="_to3" uri="direct:mock-result"/>
         </route>
+        <route id="_route5">
+            <from id="_from5" uri="direct:start-enrich"/>
+            <enrich id="_enrich1" strategyRef="myAggregationStrategy">
+                <constant>direct:resource</constant>
+            </enrich>
+            <to id="_to4" uri="direct:result"/>
+        </route>
+        <route id="_route6">
+            <from id="_from6" uri="direct:resource"/>
+            <setBody id="_setBody2">
+                <constant>World!</constant>
+            </setBody>
+        </route>
         <route id="_route4">
             <from id="_from4" uri="direct:mock-result"/>
             <log id="_log1" message="from direct:mock-result ----------> ${body}"/>
+        </route>
+        <route id="_route7">
+            <from id="_from7" uri="direct:result"/>
+            <log id="_log2" message="from direct:result ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>
