@@ -41,6 +41,8 @@ public class Test {
 		LOGGER.info(String.format("RESPONSE ----------> %s",response5));
 		String response6 = producerTemplate.requestBodyAndHeader("direct:start-enrich-dynamic","Hello","uri","direct:resource",String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response6));
+		String response7 = producerTemplate.requestBody("direct:start-poll-enrich","Hello",String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response7));
 		try {
 			main.stop();
 		} catch (Exception e) {
