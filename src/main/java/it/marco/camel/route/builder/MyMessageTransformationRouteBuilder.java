@@ -36,6 +36,10 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.enrich("direct:resource",myAggregationStrategy)
 			.to("direct:mock-result");
 		
+		from("direct:start-enrich-no-aggregation")
+			.enrich("direct:resource")
+			.to("direct:mock-result");
+		
 		from("direct:resource")
 			.setBody(constant("World"));
 		

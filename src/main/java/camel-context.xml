@@ -31,6 +31,13 @@
             </enrich>
             <to id="_to4" uri="direct:result"/>
         </route>
+        <route id="_route8">
+            <from id="_from8" uri="direct:start-enrich-no-aggregation"/>
+            <enrich id="_enrich2">
+                <constant>direct:resource</constant>
+            </enrich>
+            <to id="_to5" uri="direct:result"/>
+        </route>
         <route id="_route6">
             <from id="_from6" uri="direct:resource"/>
             <setBody id="_setBody2">

@@ -37,6 +37,8 @@ public class Test {
 		LOGGER.info(String.format("RESPONSE ----------> %s",response3));
 		String response4 = producerTemplate.requestBody("direct:start-enrich","Hello",String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response4));
+		String response5 = producerTemplate.requestBody("direct:start-enrich-no-aggregation","Hello",String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response5));
 		try {
 			main.stop();
 		} catch (Exception e) {
