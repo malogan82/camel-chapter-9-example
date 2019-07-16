@@ -3,29 +3,29 @@
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
-    <bean id="myProcessor" class="it.marco.camel.processors.MyProcessor"/>
-    <bean id="myBean" class="it.marco.camel.beans.MyBean"/>
+    <bean class="it.marco.camel.processors.MyProcessor" id="myProcessor"/>
+    <bean class="it.marco.camel.beans.MyBean" id="myBean"/>
     <camelContext id="camelContext-6181de96-d9a3-4d14-817d-d295a4a6a151" xmlns="http://camel.apache.org/schema/spring">
-        <route>
-        	<from uri="direct:start"/>
-        	<setBody>
-        		<simple>${body} World!</simple>
-        	</setBody>
-        	<to uri="direct:mock-result"/>
+        <route id="_route1">
+            <from id="_from1" uri="direct:start"/>
+            <setBody id="_setBody1">
+                <simple>${body} World!</simple>
+            </setBody>
+            <to id="_to1" uri="direct:mock-result"/>
         </route>
-        <route>
-        	<from uri="direct:start-processor"/>
-        	<process ref="myProcessor"/>
-        	<to uri="direct:mock-result"/>
+        <route id="_route2">
+            <from id="_from2" uri="direct:start-processor"/>
+            <process id="_process1" ref="myProcessor"/>
+            <to id="_to2" uri="direct:mock-result"/>
         </route>
-        <route>
-        	<from uri="direct:start-bean"/>
-        	<bean ref="myBean" method="transform"/>
-        	<to uri="direct:mock-result"/>
+        <route id="_route3">
+            <from id="_from3" uri="direct:start-bean"/>
+            <bean id="_bean1" method="transform" ref="myBean"/>
+            <to id="_to3" uri="direct:mock-result"/>
         </route>
-        <route>
-        	<from uri="direct:mock-result"/>
-        	<log message="from direct:mock-result ----------> ${body}"/>
+        <route id="_route4">
+            <from id="_from4" uri="direct:mock-result"/>
+            <log id="_log1" message="from direct:mock-result ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>
