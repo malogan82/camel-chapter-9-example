@@ -39,25 +39,22 @@
             </enrich>
             <to id="_to5" uri="direct:result"/>
         </route>
-        <route>
-            <from uri="direct:start-enrich-options"/>
-            <enrich strategyRef="myAggregationStrategyPojo" 
-            		strategyMethodName="aggregateMethod"
-            		strategyMethodAllowNull="true"
-            		aggregateOnException="true"
-            		shareUnitOfWork="true"
-            		cacheSize="-1"
-            		ignoreInvalidEndpoint="true">
-            	<constant>direct:resource</constant>
+        <route id="_route9">
+            <from id="_from9" uri="direct:start-enrich-options"/>
+            <enrich aggregateOnException="true" cacheSize="-1"
+                id="_enrich3" ignoreInvalidEndpoint="true"
+                shareUnitOfWork="true" strategyMethodAllowNull="true"
+                strategyMethodName="aggregateMethod" strategyRef="myAggregationStrategyPojo">
+                <constant>direct:resource</constant>
             </enrich>
-            <to uri="direct:result"/>
+            <to id="_to6" uri="direct:result"/>
         </route>
-        <route>
-        	<from uri="direct:start-enrich-dynamic"/>
-        	<enrich>
-        		<simple>${header.uri}</simple>
-        	</enrich>
-        	<to uri="direct:result"/>
+        <route id="_route10">
+            <from id="_from10" uri="direct:start-enrich-dynamic"/>
+            <enrich id="_enrich4">
+                <simple>${header.uri}</simple>
+            </enrich>
+            <to id="_to7" uri="direct:result"/>
         </route>
         <route id="_route6">
             <from id="_from6" uri="direct:resource"/>
