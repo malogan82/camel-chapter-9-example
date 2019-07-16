@@ -3,6 +3,7 @@
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="it.marco.camel.pojos.MyAggregationStrategyPojo" id="myAggregationStrategyPojo"/>
     <bean class="it.marco.camel.strategies.MyAggregationStrategy" id="myAggregationStrategy"/>
     <bean class="it.marco.camel.processors.MyProcessor" id="myProcessor"/>
     <bean class="it.marco.camel.beans.MyBean" id="myBean"/>
@@ -37,6 +38,19 @@
                 <constant>direct:resource</constant>
             </enrich>
             <to id="_to5" uri="direct:result"/>
+        </route>
+        <route>
+            <from uri="direct:start-enrich-options"/>
+            <enrich strategyRef="myAggregationStrategyPojo" 
+            		strategyMethodName="aggregateMethod"
+            		strategyMethodAllowNull="true"
+            		aggregateOnException="true"
+            		shareUnitOfWork="true"
+            		cacheSize="-1"
+            		ignoreInvalidEndpoint="true">
+            	<constant>direct:resource</constant>
+            </enrich>
+            <to uri="direct:result"/>
         </route>
         <route id="_route6">
             <from id="_from6" uri="direct:resource"/>

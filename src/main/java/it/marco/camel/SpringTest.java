@@ -41,6 +41,8 @@ public class SpringTest {
 			LOGGER.info(String.format("RESPONSE ----------> %s",response4));
 			String response5 = producerTemplate.requestBody("direct:start-enrich-no-aggregation","Hello",String.class);
 			LOGGER.info(String.format("RESPONSE ----------> %s",response5));
+			String response6 = producerTemplate.requestBody("direct:start-enrich-options","Hello",String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response6));
 			try {
 				main.stop();
 			} catch (Exception e) {
