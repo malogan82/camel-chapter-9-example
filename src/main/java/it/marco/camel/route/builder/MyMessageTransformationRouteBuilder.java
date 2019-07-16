@@ -40,8 +40,15 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.enrich("direct:resource")
 			.to("direct:mock-result");
 		
+		from("direct:start-enrich-dynamic")
+			.enrich().simple("${header.uri}")
+			.to("direct:result");
+		
 		from("direct:resource")
 			.setBody(constant("World"));
+		
+		from("direct:result")
+			.log("from direct:result ----------> ${body}");
 		
 		from("direct:mock-result")
 			.log("from direct:mock-result ----------> ${body}");

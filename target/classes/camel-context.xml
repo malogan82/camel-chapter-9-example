@@ -52,6 +52,13 @@
             </enrich>
             <to uri="direct:result"/>
         </route>
+        <route>
+        	<from uri="direct:start-enrich-dynamic"/>
+        	<enrich>
+        		<simple>${header.uri}</simple>
+        	</enrich>
+        	<to uri="direct:result"/>
+        </route>
         <route id="_route6">
             <from id="_from6" uri="direct:resource"/>
             <setBody id="_setBody2">
