@@ -4,12 +4,17 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
+
+import it.marco.camel.strategies.MyAggregationStrategy;
 
 public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 
 	@Override
 	public void configure() throws Exception {
 		// TODO Auto-generated method stub
+		
+		AggregationStrategy myAggregationStrategy = new MyAggregationStrategy();
 		
 		from("direct:start")
 			.setBody(body().append(" World!")).to("direct:mock-result");
@@ -26,6 +31,13 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 		from("direct:start-bean")
 			.beanRef("myBean","transform")
 			.to("direct:mock-result");
+		
+		from("direct:start-enrich")
+			.enrich("direct:resource",myAggregationStrategy)
+			.to("direct:mock-result");
+		
+		from("direct:resource")
+			.setBody(constant("World"));
 		
 		from("direct:mock-result")
 			.log("from direct:mock-result ----------> ${body}");
