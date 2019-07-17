@@ -56,7 +56,7 @@ public class SpringTest {
 																	 "poll-enrich", 
 																	 String.class);
 			LOGGER.info(String.format("RESPONSE ----------> %s",response10));
-			producerTemplate.sendBody("seda:poll-enrich-options","World!");
+			producerTemplate.sendBody("seda:poll-enrich","World!");
 			String response11 = producerTemplate.requestBody("direct:start-poll-enrich-options","Hello",String.class);
 			LOGGER.info(String.format("RESPONSE ----------> %s",response11));
 			try {

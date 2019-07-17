@@ -89,19 +89,15 @@
             <from id="_from14" uri="direct:start-poll-enrich-options"/>
             <pollEnrich aggregateOnException="true" cacheSize="-1"
                 id="_pollEnrich4" ignoreInvalidEndpoint="true"
-                strategyMethodAllowNull="true" strategyMethodName="aggregateMethod"
-                strategyRef="myAggregationStrategyPojo">
-                <constant>seda:poll-enrich-options</constant>
+                strategyMethodAllowNull="true"
+                strategyMethodName="aggregateMethod" strategyRef="myAggregationStrategyPojo">
+                <constant>seda:poll-enrich</constant>
             </pollEnrich>
             <to id="_to11" uri="direct:result"/>
         </route>
         <route id="_route15">
             <from id="_from15" uri="seda:poll-enrich"/>
             <log id="_log3" message="${body}"/>
-        </route>
-         <route>
-            <from uri="seda:poll-enrich-options"/>
-            <log message="${body}"/>
         </route>
         <route id="_route4">
             <from id="_from4" uri="direct:mock-result"/>
