@@ -73,6 +73,14 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.sort(body().tokenize("\n"))
 			.to("bean:myBean?method=processLine");
 		
+		from("direct:start-validate")
+		  .validate(body(String.class).regex("^\\w{10}\\,\\d{2}\\,\\w{24}$"))
+		  .to("direct:validated");
+		
+		from("direct:start-validate-header")
+		  .validate(header("bar").isGreaterThan(100))
+		  .to("direct:validated");
+		
 		from("seda:poll-enrich")
 			.log("${body}");
 		
@@ -84,6 +92,9 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 		
 		from("direct:mock-result")
 			.log("from direct:mock-result ----------> ${body}");
+		
+		from("direct:validated")
+			.log("${body}");
 
 	}
 

@@ -60,6 +60,10 @@ public class Test {
 		LOGGER.info(String.format("RESPONSE ----------> %s",response10));
 		String response11 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyCustomer,String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response11));
+		String response12 = producerTemplate.requestBody("direct:start-validate","TEST",String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response12));
+		String response13 = producerTemplate.requestBodyAndHeader("direct:start-validate-header","TEST","bar",200,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response13));
 		try {
 			Thread.sleep(10000);
 			main.stop();
