@@ -61,6 +61,7 @@ public class Test {
 		String response11 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyCustomer,String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response11));
 		try {
+			Thread.sleep(10000);
 			main.stop();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(),e);

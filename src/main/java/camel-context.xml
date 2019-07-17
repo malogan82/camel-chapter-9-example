@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:foo="http://example.com/person"
     xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:foo="http://example.com/person"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
     <bean class="it.marco.camel.pojos.MyAggregationStrategyPojo" id="myAggregationStrategyPojo"/>
@@ -97,20 +97,29 @@
             </pollEnrich>
             <to id="_to11" uri="direct:result"/>
         </route>
-        <route>
-		    <from uri="direct:start-normalizer"/>
-		    <choice>
-		      <when>
-		        <xpath>/employee</xpath>
-		        <to uri="bean:myNormalizer?method=employeeToPerson"/>
-		      </when>
-		      <when>
-		        <xpath>/customer</xpath>
-		        <to uri="bean:myNormalizer?method=customerToPerson"/>
-		      </when>
-		    </choice>
-		    <to uri="direct:mock-result"/>
-		</route>
+        <route id="_route18">
+            <from id="_from18" uri="direct:start-normalizer"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <xpath>/employee</xpath>
+                    <to id="_to13" uri="bean:myNormalizer?method=employeeToPerson"/>
+                </when>
+                <when id="_when2">
+                    <xpath>/customer</xpath>
+                    <to id="_to14" uri="bean:myNormalizer?method=customerToPerson"/>
+                </when>
+            </choice>
+            <to id="_to15" uri="direct:mock-result"/>
+        </route>
+        <route id="_route19">
+            <from id="_from19" uri="file://target/inbox/?noop=true;fileName=sort.txt"/>
+            <sort id="_sort1">
+            	<simple>
+            		${body}
+            	</simple>
+            </sort>
+            <to id="_to16" uri="bean:myBean?method=processLine"/>
+        </route>
         <route id="_route16">
             <from id="_from16" uri="direct:xpath-filter"/>
             <setBody id="_setBody3">

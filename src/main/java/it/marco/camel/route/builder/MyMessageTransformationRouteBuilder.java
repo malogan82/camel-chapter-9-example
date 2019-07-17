@@ -69,6 +69,10 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 		    .end()
 	    .to("direct:mock-result");
 		
+		from("file://target/inbox/?noop=true;fileName=sort.txt")
+			.sort(body().tokenize("\n"))
+			.to("bean:myBean?method=processLine");
+		
 		from("seda:poll-enrich")
 			.log("${body}");
 		
