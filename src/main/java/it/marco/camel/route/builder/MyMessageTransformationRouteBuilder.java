@@ -6,7 +6,6 @@ import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 
-import it.marco.camel.strategies.MyAggregationFileStrategy;
 import it.marco.camel.strategies.MyAggregationStrategy;
 
 public class MyMessageTransformationRouteBuilder extends RouteBuilder {
@@ -16,7 +15,6 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 		// TODO Auto-generated method stub
 		
 		AggregationStrategy myAggregationStrategy = new MyAggregationStrategy();
-		AggregationStrategy myAggregationFileStrategy = new MyAggregationFileStrategy();
 		
 		from("direct:start")
 			.setBody(body().append(" World!")).to("direct:mock-result");
@@ -47,7 +45,7 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.to("direct:result");
 		
 		from("direct:start-poll-enrich")
-			.pollEnrich("file://target/data/?fileName=resource.txt",5000,myAggregationFileStrategy)
+			.pollEnrich("file://target/data/?fileName=resource.txt",5000,myAggregationStrategy)
 			.to("direct:result");
 		
 		from("direct:resource")
