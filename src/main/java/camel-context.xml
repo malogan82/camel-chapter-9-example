@@ -127,6 +127,13 @@
             </setBody>
             <to id="_to12" uri="direct:xpath-result"/>
         </route>
+        <route>
+		  <from uri="direct:start-validate-simple"/>
+		  <validate>
+		    <simple>${in.header.bar} == 100</simple>
+		  </validate>
+		  <to uri="direct:validated"/>
+		</route>
         <route id="_route15">
             <from id="_from15" uri="seda:poll-enrich"/>
             <log id="_log3" message="${body}"/>
@@ -142,6 +149,10 @@
         <route id="_route17">
             <from id="_from17" uri="direct:xpath-result"/>
             <log id="_log4" message="from direct:xpath-result ----------> ${body}"/>
+        </route>
+        <route>
+            <from uri="direct:validated"/>
+            <log message="from direct:validated ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>
