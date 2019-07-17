@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:foo="http://example.com/person"
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
@@ -95,6 +96,13 @@
             </pollEnrich>
             <to id="_to11" uri="direct:result"/>
         </route>
+        <route id="_route16">
+            <from id="_from16" uri="direct:xpath-filter"/>
+            <setBody id="_setBody3">
+                <xpath logNamespaces="true" resultType="org.w3c.dom.Document">//foo:bar</xpath>
+            </setBody>
+            <to id="_to12" uri="direct:xpath-result"/>
+        </route>
         <route id="_route15">
             <from id="_from15" uri="seda:poll-enrich"/>
             <log id="_log3" message="${body}"/>
@@ -106,6 +114,10 @@
         <route id="_route7">
             <from id="_from7" uri="direct:result"/>
             <log id="_log2" message="from direct:result ----------> ${body}"/>
+        </route>
+        <route id="_route17">
+            <from id="_from17" uri="direct:xpath-result"/>
+            <log id="_log4" message="from direct:xpath-result ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>
