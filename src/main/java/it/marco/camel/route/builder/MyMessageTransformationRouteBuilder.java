@@ -62,6 +62,13 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 				.timeout(20000)
 			.to("direct:result");
 		
+		from("direct:start-normalizer")
+		    .choice()
+		        .when().xpath("/employee").to("bean:myNormalizer?method=employeeToPerson")
+		        .when().xpath("/customer").to("bean:myNormalizer?method=customerToPerson")
+		    .end()
+	    .to("direct:mock-result");
+		
 		from("seda:poll-enrich")
 			.log("${body}");
 		

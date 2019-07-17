@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.marco.camel.beans.MyBean;
+import it.marco.camel.beans.MyNormalizer;
 import it.marco.camel.route.builder.MyMessageTransformationRouteBuilder;
 import it.marco.camel.runnable.MyRunnable;
 
@@ -17,6 +18,7 @@ public class Test {
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.bind("myBean", new MyBean());
+		main.bind("myNormalizer", new MyNormalizer());
 		main.addRouteBuilder(new MyMessageTransformationRouteBuilder());
 		MyRunnable runnable = new MyRunnable(main);
 		Thread thread = new Thread(runnable);
@@ -52,6 +54,12 @@ public class Test {
 																 "poll-enrich", 
 																 String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response9));
+		String xmlBodyEmployee = "<employee><name>Mario</name>EMPLOYEE</employee>";
+		String xmlBodyCustomer = "<customer name=\"Antonio\">CUSTOMER</customer>";
+		String response10 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyEmployee,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response10));
+		String response11 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyCustomer,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response11));
 		try {
 			main.stop();
 		} catch (Exception e) {
