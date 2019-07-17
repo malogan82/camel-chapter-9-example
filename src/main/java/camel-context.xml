@@ -8,6 +8,7 @@
     <bean class="it.marco.camel.strategies.MyAggregationStrategy" id="myAggregationStrategy"/>
     <bean class="it.marco.camel.processors.MyProcessor" id="myProcessor"/>
     <bean class="it.marco.camel.beans.MyBean" id="myBean"/>
+    <bean class="it.marco.camel.beans.MyNormalizer" id="myNormalizer"/>
     <camelContext id="camelContext-6181de96-d9a3-4d14-817d-d295a4a6a151" xmlns="http://camel.apache.org/schema/spring">
         <route id="_route1">
             <from id="_from1" uri="direct:start"/>
@@ -96,6 +97,20 @@
             </pollEnrich>
             <to id="_to11" uri="direct:result"/>
         </route>
+        <route>
+		    <from uri="direct:start-normalizer"/>
+		    <choice>
+		      <when>
+		        <xpath>/employee</xpath>
+		        <to uri="bean:myNormalizer?method=employeeToPerson"/>
+		      </when>
+		      <when>
+		        <xpath>/customer</xpath>
+		        <to uri="bean:myNormalizer?method=customerToPerson"/>
+		      </when>
+		    </choice>
+		    <to uri="direct:mock-result"/>
+		</route>
         <route id="_route16">
             <from id="_from16" uri="direct:xpath-filter"/>
             <setBody id="_setBody3">

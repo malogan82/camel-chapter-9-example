@@ -63,6 +63,12 @@ public class SpringTest {
 							 "<bar xmlns=\"http://example.com/person\">TEST</bar>";
 			String response12 = producerTemplate.requestBody("direct:xpath-filter",xmlBody,String.class);
 			LOGGER.info(String.format("RESPONSE ----------> %s",response12));
+			String xmlBodyEmployee = "<employee><name>Mario</name>EMPLOYEE</employee>";
+			String xmlBodyCustomer = "<customer name=\"Antonio\">CUSTOMER</customer>";
+			String response13 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyEmployee,String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response13));
+			String response14 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyCustomer,String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response14));
 			try {
 				main.stop();
 			} catch (Exception e) {
