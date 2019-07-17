@@ -5,10 +5,14 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import it.marco.camel.strategies.MyAggregationStrategy;
 
 public class MyMessageTransformationRouteBuilder extends RouteBuilder {
+	
+	public static Logger LOGGER = LoggerFactory.getLogger(MyMessageTransformationRouteBuilder.class);
 
 	@Override
 	public void configure() throws Exception {
@@ -45,8 +49,21 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.to("direct:result");
 		
 		from("direct:start-poll-enrich")
-			.pollEnrich("file://target/data/?fileName=resource.txt",5000,myAggregationStrategy)
+			.pollEnrich("file://target/data/?noop=true;fileName=resource1.txt",2000)
 			.to("direct:result");
+		
+		from("direct:start-poll-enrich-aggregation-strategy")
+			.pollEnrich("file://target/data/?noop=true;fileName=resource2.txt",20000,myAggregationStrategy)
+			.to("direct:result");
+		
+		from("direct:start-poll-enrich-dynamic")
+			.pollEnrich()
+				.simple("seda:${header.Endpoint}")
+				.timeout(20000)
+			.to("direct:result");
+		
+		from("seda:poll-enrich")
+			.log("${body}");
 		
 		from("direct:resource")
 			.setBody(constant("World!"));

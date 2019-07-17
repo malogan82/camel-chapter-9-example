@@ -62,6 +62,31 @@
                 <constant>World!</constant>
             </setBody>
         </route>
+        <route>
+        	<from uri="direct:start-poll-enrich"/>
+        	<pollEnrich timeout="20000">
+        		<constant>file:target/data/?noop=true;fileName=resource1.txt</constant>
+        	</pollEnrich>
+        	<to uri="direct:result"/>
+        </route>
+        <route>
+        	<from uri="direct:start-poll-enrich-aggregation-strategy"/>
+        	<pollEnrich strategyRef="myAggregationStrategy" timeout="20000">
+        		<constant>file:target/data/?noop=true;fileName=resource2.txt</constant>
+        	</pollEnrich>
+        	<to uri="direct:result"/>
+        </route>
+        <route>
+        	<from uri="direct:start-poll-enrich-dynamic"/>
+        	<pollEnrich strategyRef="myAggregationStrategy" timeout="20000">
+        		<simple>seda:${header.Endpoint}</simple>
+        	</pollEnrich>
+        	<to uri="direct:result"/>
+        </route>
+        <route>
+        	<from uri="seda:poll-enrich"/>
+        	<log message="${body}"/>
+        </route>
         <route id="_route4">
             <from id="_from4" uri="direct:mock-result"/>
             <log id="_log1" message="from direct:mock-result ----------> ${body}"/>

@@ -45,6 +45,17 @@ public class SpringTest {
 			LOGGER.info(String.format("RESPONSE ----------> %s",response6));
 			String response7 = producerTemplate.requestBodyAndHeader("direct:start-enrich-dynamic","Hello","uri","direct:resource",String.class);
 			LOGGER.info(String.format("RESPONSE ----------> %s",response7));
+			String response8 = producerTemplate.requestBody("direct:start-poll-enrich","Hello",String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response8));
+			String response9 = producerTemplate.requestBody("direct:start-poll-enrich-aggregation-strategy","Hello",String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response9));
+			producerTemplate.sendBody("seda:poll-enrich","World!");
+			String response10 = producerTemplate.requestBodyAndHeader("direct:start-poll-enrich-dynamic", 
+																	 "Hello", 
+																	 "Endpoint", 
+																	 "poll-enrich", 
+																	 String.class);
+			LOGGER.info(String.format("RESPONSE ----------> %s",response10));
 			try {
 				main.stop();
 			} catch (Exception e) {
