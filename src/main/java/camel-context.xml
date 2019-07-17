@@ -62,30 +62,46 @@
                 <constant>World!</constant>
             </setBody>
         </route>
-        <route>
-        	<from uri="direct:start-poll-enrich"/>
-        	<pollEnrich timeout="20000">
-        		<constant>file:target/data/?noop=true;fileName=resource1.txt</constant>
-        	</pollEnrich>
-        	<to uri="direct:result"/>
+        <route id="_route11">
+            <from id="_from11" uri="direct:start-poll-enrich"/>
+            <pollEnrich id="_pollEnrich1" timeout="20000">
+                <constant>file:target/data/?noop=true;fileName=resource1.txt</constant>
+            </pollEnrich>
+            <to id="_to8" uri="direct:result"/>
         </route>
-        <route>
-        	<from uri="direct:start-poll-enrich-aggregation-strategy"/>
-        	<pollEnrich strategyRef="myAggregationStrategy" timeout="20000">
-        		<constant>file:target/data/?noop=true;fileName=resource2.txt</constant>
-        	</pollEnrich>
-        	<to uri="direct:result"/>
+        <route id="_route12">
+            <from id="_from12" uri="direct:start-poll-enrich-aggregation-strategy"/>
+            <pollEnrich id="_pollEnrich2"
+                strategyRef="myAggregationStrategy" timeout="20000">
+                <constant>file:target/data/?noop=true;fileName=resource2.txt</constant>
+            </pollEnrich>
+            <to id="_to9" uri="direct:result"/>
         </route>
-        <route>
-        	<from uri="direct:start-poll-enrich-dynamic"/>
-        	<pollEnrich strategyRef="myAggregationStrategy" timeout="20000">
-        		<simple>seda:${header.Endpoint}</simple>
-        	</pollEnrich>
-        	<to uri="direct:result"/>
+        <route id="_route13">
+            <from id="_from13" uri="direct:start-poll-enrich-dynamic"/>
+            <pollEnrich id="_pollEnrich3"
+                strategyRef="myAggregationStrategy" timeout="20000">
+                <simple>seda:${header.Endpoint}</simple>
+            </pollEnrich>
+            <to id="_to10" uri="direct:result"/>
         </route>
-        <route>
-        	<from uri="seda:poll-enrich"/>
-        	<log message="${body}"/>
+        <route id="_route14">
+            <from id="_from14" uri="direct:start-poll-enrich-options"/>
+            <pollEnrich aggregateOnException="true" cacheSize="-1"
+                id="_pollEnrich4" ignoreInvalidEndpoint="true"
+                strategyMethodAllowNull="true" strategyMethodName="aggregateMethod"
+                strategyRef="myAggregationStrategyPojo">
+                <constant>seda:poll-enrich-options</constant>
+            </pollEnrich>
+            <to id="_to11" uri="direct:result"/>
+        </route>
+        <route id="_route15">
+            <from id="_from15" uri="seda:poll-enrich"/>
+            <log id="_log3" message="${body}"/>
+        </route>
+         <route>
+            <from uri="seda:poll-enrich-options"/>
+            <log message="${body}"/>
         </route>
         <route id="_route4">
             <from id="_from4" uri="direct:mock-result"/>
