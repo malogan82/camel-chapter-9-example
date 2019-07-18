@@ -114,7 +114,7 @@
         <route id="_route19">
             <from id="_from19" uri="file://target/inbox/?noop=true;fileName=sort.txt"/>
             <sort id="_sort1">
-            	<simple>
+                <simple>
             		${body}
             	</simple>
             </sort>
@@ -127,13 +127,13 @@
             </setBody>
             <to id="_to12" uri="direct:xpath-result"/>
         </route>
-        <route>
-		  <from uri="direct:start-validate-simple"/>
-		  <validate>
-		    <simple>${in.header.bar} == 100</simple>
-		  </validate>
-		  <to uri="direct:validated"/>
-		</route>
+        <route id="_route20">
+            <from id="_from20" uri="direct:start-validate-simple"/>
+            <validate id="_validate1">
+                <simple>${in.header.bar} == 100</simple>
+            </validate>
+            <to id="_to17" uri="direct:validated"/>
+        </route>
         <route id="_route15">
             <from id="_from15" uri="seda:poll-enrich"/>
             <log id="_log3" message="${body}"/>
@@ -150,9 +150,9 @@
             <from id="_from17" uri="direct:xpath-result"/>
             <log id="_log4" message="from direct:xpath-result ----------> ${body}"/>
         </route>
-        <route>
-            <from uri="direct:validated"/>
-            <log message="from direct:validated ----------> ${body}"/>
+        <route id="_route20">
+            <from id="_from21" uri="direct:validated"/>
+            <log id="_log5" message="from direct:validated ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>
