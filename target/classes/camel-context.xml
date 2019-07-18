@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:foo="http://example.com/person"
     xmlns:prop="http://camel.apache.org/schema/placeholder"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans                  http://www.springframework.org/schema/beans/spring-beans-3.0.xsd                 http://camel.apache.org/schema/spring                  http://camel.apache.org/schema/spring/camel-spring.xsd">
     <bean class="it.marco.camel.pojos.MyAggregationStrategyPojo" id="myAggregationStrategyPojo"/>
     <bean class="it.marco.camel.strategies.MyAggregationStrategy" id="myAggregationStrategy"/>
     <bean class="it.marco.camel.processors.MyProcessor" id="myProcessor"/>
     <bean class="it.marco.camel.beans.MyBean" id="myBean"/>
+    <bean class="it.marco.camel.beans.MyNormalizer" id="myNormalizer"/>
     <camelContext id="camelContext-6181de96-d9a3-4d14-817d-d295a4a6a151" xmlns="http://camel.apache.org/schema/spring">
         <route id="_route1">
             <from id="_from1" uri="direct:start"/>
@@ -62,6 +64,80 @@
                 <constant>World!</constant>
             </setBody>
         </route>
+        <route id="_route11">
+            <from id="_from11" uri="direct:start-poll-enrich"/>
+            <pollEnrich id="_pollEnrich1" timeout="20000">
+                <constant>file:target/data/?noop=true;fileName=resource1.txt</constant>
+            </pollEnrich>
+            <to id="_to8" uri="direct:result"/>
+        </route>
+        <route id="_route12">
+            <from id="_from12" uri="direct:start-poll-enrich-aggregation-strategy"/>
+            <pollEnrich id="_pollEnrich2"
+                strategyRef="myAggregationStrategy" timeout="20000">
+                <constant>file:target/data/?noop=true;fileName=resource2.txt</constant>
+            </pollEnrich>
+            <to id="_to9" uri="direct:result"/>
+        </route>
+        <route id="_route13">
+            <from id="_from13" uri="direct:start-poll-enrich-dynamic"/>
+            <pollEnrich id="_pollEnrich3"
+                strategyRef="myAggregationStrategy" timeout="20000">
+                <simple>seda:${header.Endpoint}</simple>
+            </pollEnrich>
+            <to id="_to10" uri="direct:result"/>
+        </route>
+        <route id="_route14">
+            <from id="_from14" uri="direct:start-poll-enrich-options"/>
+            <pollEnrich aggregateOnException="true" cacheSize="-1"
+                id="_pollEnrich4" ignoreInvalidEndpoint="true"
+                strategyMethodAllowNull="true"
+                strategyMethodName="aggregateMethod" strategyRef="myAggregationStrategyPojo">
+                <constant>seda:poll-enrich</constant>
+            </pollEnrich>
+            <to id="_to11" uri="direct:result"/>
+        </route>
+        <route id="_route18">
+            <from id="_from18" uri="direct:start-normalizer"/>
+            <choice id="_choice1">
+                <when id="_when1">
+                    <xpath>/employee</xpath>
+                    <to id="_to13" uri="bean:myNormalizer?method=employeeToPerson"/>
+                </when>
+                <when id="_when2">
+                    <xpath>/customer</xpath>
+                    <to id="_to14" uri="bean:myNormalizer?method=customerToPerson"/>
+                </when>
+            </choice>
+            <to id="_to15" uri="direct:mock-result"/>
+        </route>
+        <route id="_route19">
+            <from id="_from19" uri="file://target/inbox/?noop=true;fileName=sort.txt"/>
+            <sort id="_sort1">
+            	<simple>
+            		${body}
+            	</simple>
+            </sort>
+            <to id="_to16" uri="bean:myBean?method=processLine"/>
+        </route>
+        <route id="_route16">
+            <from id="_from16" uri="direct:xpath-filter"/>
+            <setBody id="_setBody3">
+                <xpath logNamespaces="true" resultType="org.w3c.dom.Document">//foo:bar</xpath>
+            </setBody>
+            <to id="_to12" uri="direct:xpath-result"/>
+        </route>
+        <route>
+		  <from uri="direct:start-validate-simple"/>
+		  <validate>
+		    <simple>${in.header.bar} == 100</simple>
+		  </validate>
+		  <to uri="direct:validated"/>
+		</route>
+        <route id="_route15">
+            <from id="_from15" uri="seda:poll-enrich"/>
+            <log id="_log3" message="${body}"/>
+        </route>
         <route id="_route4">
             <from id="_from4" uri="direct:mock-result"/>
             <log id="_log1" message="from direct:mock-result ----------> ${body}"/>
@@ -69,6 +145,14 @@
         <route id="_route7">
             <from id="_from7" uri="direct:result"/>
             <log id="_log2" message="from direct:result ----------> ${body}"/>
+        </route>
+        <route id="_route17">
+            <from id="_from17" uri="direct:xpath-result"/>
+            <log id="_log4" message="from direct:xpath-result ----------> ${body}"/>
+        </route>
+        <route>
+            <from uri="direct:validated"/>
+            <log message="from direct:validated ----------> ${body}"/>
         </route>
     </camelContext>
 </beans>

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import it.marco.camel.beans.MyBean;
+import it.marco.camel.beans.MyNormalizer;
 import it.marco.camel.route.builder.MyMessageTransformationRouteBuilder;
 import it.marco.camel.runnable.MyRunnable;
 
@@ -17,6 +18,7 @@ public class Test {
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.bind("myBean", new MyBean());
+		main.bind("myNormalizer", new MyNormalizer());
 		main.addRouteBuilder(new MyMessageTransformationRouteBuilder());
 		MyRunnable runnable = new MyRunnable(main);
 		Thread thread = new Thread(runnable);
@@ -43,7 +45,27 @@ public class Test {
 		LOGGER.info(String.format("RESPONSE ----------> %s",response6));
 		String response7 = producerTemplate.requestBody("direct:start-poll-enrich","Hello",String.class);
 		LOGGER.info(String.format("RESPONSE ----------> %s",response7));
+		String response8 = producerTemplate.requestBody("direct:start-poll-enrich-aggregation-strategy","Hello",String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response8));
+		producerTemplate.sendBody("seda:poll-enrich","World!");
+		String response9 = producerTemplate.requestBodyAndHeader("direct:start-poll-enrich-dynamic", 
+																 "Hello", 
+																 "Endpoint", 
+																 "poll-enrich", 
+																 String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response9));
+		String xmlBodyEmployee = "<employee><name>Mario</name>EMPLOYEE</employee>";
+		String xmlBodyCustomer = "<customer name=\"Antonio\">CUSTOMER</customer>";
+		String response10 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyEmployee,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response10));
+		String response11 = producerTemplate.requestBody("direct:start-normalizer",xmlBodyCustomer,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response11));
+		String response12 = producerTemplate.requestBody("direct:start-validate","TEST",String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response12));
+		String response13 = producerTemplate.requestBodyAndHeader("direct:start-validate-header","TEST","bar",200,String.class);
+		LOGGER.info(String.format("RESPONSE ----------> %s",response13));
 		try {
+			Thread.sleep(10000);
 			main.stop();
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage(),e);

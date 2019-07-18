@@ -5,18 +5,20 @@ import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import it.marco.camel.strategies.MyAggregationFileStrategy;
 import it.marco.camel.strategies.MyAggregationStrategy;
 
 public class MyMessageTransformationRouteBuilder extends RouteBuilder {
+	
+	public static Logger LOGGER = LoggerFactory.getLogger(MyMessageTransformationRouteBuilder.class);
 
 	@Override
 	public void configure() throws Exception {
 		// TODO Auto-generated method stub
 		
 		AggregationStrategy myAggregationStrategy = new MyAggregationStrategy();
-		AggregationStrategy myAggregationFileStrategy = new MyAggregationFileStrategy();
 		
 		from("direct:start")
 			.setBody(body().append(" World!")).to("direct:mock-result");
@@ -47,8 +49,40 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 			.to("direct:result");
 		
 		from("direct:start-poll-enrich")
-			.pollEnrich("file://target/data/?fileName=resource.txt",5000,myAggregationFileStrategy)
+			.pollEnrich("file://target/data/?noop=true;fileName=resource1.txt",2000)
 			.to("direct:result");
+		
+		from("direct:start-poll-enrich-aggregation-strategy")
+			.pollEnrich("file://target/data/?noop=true;fileName=resource2.txt",20000,myAggregationStrategy)
+			.to("direct:result");
+		
+		from("direct:start-poll-enrich-dynamic")
+			.pollEnrich()
+				.simple("seda:${header.Endpoint}")
+				.timeout(20000)
+			.to("direct:result");
+		
+		from("direct:start-normalizer")
+		    .choice()
+		        .when().xpath("/employee").to("bean:myNormalizer?method=employeeToPerson")
+		        .when().xpath("/customer").to("bean:myNormalizer?method=customerToPerson")
+		    .end()
+	    .to("direct:mock-result");
+		
+		from("file://target/inbox/?noop=true;fileName=sort.txt")
+			.sort(body().tokenize("\n"))
+			.to("bean:myBean?method=processLine");
+		
+		from("direct:start-validate")
+		  .validate(body(String.class).regex("^\\w{10}\\,\\d{2}\\,\\w{24}$"))
+		  .to("direct:validated");
+		
+		from("direct:start-validate-header")
+		  .validate(header("bar").isGreaterThan(100))
+		  .to("direct:validated");
+		
+		from("seda:poll-enrich")
+			.log("${body}");
 		
 		from("direct:resource")
 			.setBody(constant("World!"));
@@ -58,6 +92,9 @@ public class MyMessageTransformationRouteBuilder extends RouteBuilder {
 		
 		from("direct:mock-result")
 			.log("from direct:mock-result ----------> ${body}");
+		
+		from("direct:validated")
+			.log("${body}");
 
 	}
 
